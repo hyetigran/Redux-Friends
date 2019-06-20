@@ -1,10 +1,14 @@
 import React from 'react';
-import './App.css';
 import axios from 'axios';
+import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
+import thunk from 'redux-thunk';
+import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import { friendsReducer } from './state/reducers;';
 
+import './App.css';
 import FriendEditor from './components/FriendEditor';
 import FriendsPage from './components/FriendsPage';
-import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
 
 export default class App extends React.Component {
 	constructor(props) {
@@ -24,15 +28,14 @@ export default class App extends React.Component {
 				emailValue: '',
 				ageValue: ''
 			},
-			isEditing: false,
-			errorMessage: ''
+			isEditing: false
 		};
 	}
 
 	componentDidMount() {
 		this.setState({ spinner: true });
 		axios
-			.get('http://localhost:5000/friends')
+			.get('http://localhost:5000/api/friends')
 			.then(res => {
 				this.setState({ friends: res.data });
 			})
@@ -51,7 +54,7 @@ export default class App extends React.Component {
 			email: this.state.form.emailValue
 		};
 		axios
-			.post('http://localhost:5000/friends', { ...newFriend })
+			.post('http://localhost:5000/api/friends', { ...newFriend })
 			.then(res => {
 				this.setState({ friends: res.data });
 				console.log(res.data);
@@ -63,7 +66,7 @@ export default class App extends React.Component {
 	};
 	updateFriend = friendToEdit => {
 		axios
-			.put(`http://localhost:5000/friends/${this.state.currentFriendId}`, friendToEdit)
+			.put(`http://localhost:5000/api/friends/${this.state.currentFriendId}`, friendToEdit)
 			.then(
 				this.setState({
 					friends: this.state.friends.map(friend => {
@@ -87,7 +90,7 @@ export default class App extends React.Component {
 
 	deleteFriend = id => {
 		axios
-			.delete(`http://localhost:5000/friends/${id}`)
+			.delete(`http://localhost:5000/api/friends/${id}`)
 			.then(
 				this.setState({
 					friends: this.state.friends.filter(fr => fr.id !== id),
