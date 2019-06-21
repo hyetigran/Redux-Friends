@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 import logger from 'redux-logger';
 import { createStore, compose, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
-import { friendsReducer } from './state/reducers';
+import friendsReducer from './store/reducers';
 
 import './index.css';
 import App from './App';
