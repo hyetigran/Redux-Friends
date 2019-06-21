@@ -1,10 +1,6 @@
 import React from 'react';
 import axios from 'axios';
 import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
-import thunk from 'redux-thunk';
-import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
-import { friendsReducer } from './state/reducers;';
 
 import './App.css';
 import FriendEditor from './components/FriendEditor';
