@@ -1,10 +1,10 @@
 import * as actionTypes from './actionTypes';
 import axios from 'axios';
 
-export const fetchFriendSuccess = characters => {
+export const fetchFriendSuccess = friends => {
 	return {
 		type: actionTypes.FETCH_FRIEND_SUCCESS,
-		characters: characters
+		friends: friends
 	};
 };
 
@@ -25,7 +25,7 @@ export const fetchFriends = () => {
 	return dispatch => {
 		dispatch(fetchFriendStart());
 		axios
-			.get('https://localhost:5000/api/friends')
+			.get('http://localhost:5000/api/friends')
 			.then(res => {
 				dispatch(fetchFriendSuccess(res.data));
 			})

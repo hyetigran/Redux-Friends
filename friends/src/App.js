@@ -1,12 +1,14 @@
 import React from 'react';
 import axios from 'axios';
 import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import './App.css';
 import FriendEditor from './components/FriendEditor';
 import FriendsPage from './components/FriendsPage';
+import * as actions from './store/actions/actionCreators';
 
-export default class App extends React.Component {
+class App extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -29,16 +31,7 @@ export default class App extends React.Component {
 	}
 
 	componentDidMount() {
-		this.setState({ spinner: true });
-		axios
-			.get('http://localhost:5000/api/friends')
-			.then(res => {
-				this.setState({ friends: res.data });
-			})
-			.catch(err => {
-				this.setState({ errorMessage: err.response.statusText });
-			})
-			.finally(this.setState({ spinner: false }));
+		this.props.onFetchFriends();
 	}
 
 	addFriend = () => {
@@ -178,3 +171,18 @@ export default class App extends React.Component {
 		);
 	}
 }
+
+const mapStateToProps = state => {
+	return {
+		friends: state.friendsReducer.friends
+	};
+};
+
+const mapDispatchToProps = dispatch => {
+	return {
+		onFetchFriends: () => {
+			dispatch(actions.fetchFriends());
+		}
+	};
+};
+export default connect(mapStateToProps, mapDispatchToProps)(App);
