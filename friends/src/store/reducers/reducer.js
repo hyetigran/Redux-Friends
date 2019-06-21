@@ -20,6 +20,7 @@ const fetchFriendStart = (state, action) => {
 const fetchFriendSuccess = (state, action) => {
 	return updateObject(state, { friends: action.friends, loading: false });
 };
+
 const fetchFriendFail = (state, action) => {
 	return updateObject(state, { loading: false });
 };

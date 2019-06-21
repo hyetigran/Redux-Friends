@@ -1,34 +1,32 @@
 import React from 'react';
 import axios from 'axios';
-import { BrowserRouter as Router, Route, NavLink } from 'react-router-dom';
+import { BrowserRouter as Router, Route, NavLink, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import './App.css';
 import FriendEditor from './components/FriendEditor';
 import FriendsPage from './components/FriendsPage';
+import Login from './components/Login';
 import * as actions from './store/actions/actionCreators';
 
 class App extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			friends: [],
-			errorMessage: '',
-			spinner: false,
-			form: {
-				nameValue: '',
-				emailValue: '',
-				ageValue: ''
-			},
-			currentFriendId: null,
-			initialFormState: {
-				nameValue: '',
-				emailValue: '',
-				ageValue: ''
-			},
-			isEditing: false
-		};
-	}
+	state = {
+		friends: [],
+		errorMessage: '',
+		spinner: false,
+		form: {
+			nameValue: '',
+			emailValue: '',
+			ageValue: ''
+		},
+		currentFriendId: null,
+		initialFormState: {
+			nameValue: '',
+			emailValue: '',
+			ageValue: ''
+		},
+		isEditing: false
+	};
 
 	componentDidMount() {
 		this.props.onFetchFriends();
@@ -53,6 +51,7 @@ class App extends React.Component {
 			})
 			.finally(this.setState({ spinner: false }));
 	};
+
 	updateFriend = friendToEdit => {
 		axios
 			.put(`http://localhost:5000/api/friends/${this.state.currentFriendId}`, friendToEdit)
@@ -119,52 +118,70 @@ class App extends React.Component {
 	};
 
 	render() {
+		const friendsPage = (
+			<Route
+				exact
+				path="/friends"
+				render={props => (
+					<FriendsPage
+						{...props}
+						friends={this.state.friends}
+						setFriendToBeEdited={this.setFriendToBeEdited}
+						deleteFriend={this.deleteFriend}
+					/>
+				)}
+			/>
+		);
+		const friendsForm = (
+			<Route
+				exact
+				path="/friend-editor/:id"
+				render={props => (
+					<FriendEditor
+						{...props}
+						form={this.state.form}
+						inputChange={this.inputChange}
+						addFriend={this.addFriend}
+						updateFriend={this.updateFriend}
+						isEditing={!!this.state.currentFriendId}
+					/>
+				)}
+			/>
+		);
 		return (
 			<Router>
 				<div className="container">
 					<div className="navbar" style={{ display: 'flex' }}>
-						<li activeClassName="activeNavButton">
-							<NavLink exact to="/">
-								Home
+						<li>
+							<NavLink exact to="/login">
+								Login
 							</NavLink>
 						</li>
-						<li activeClassName="activeNavButton">
+						<li>
 							<NavLink exact to="/friends">
 								Friends
 							</NavLink>
 						</li>
-						<li activeClassName="activeNavButton">
+						<li>
 							<NavLink exact to="/friend-editor">
 								Friends Editor
 							</NavLink>
 						</li>
 					</div>
-					<Route exact path="/" />
 					<Route
 						exact
-						path="/friends"
-						render={props => (
-							<FriendsPage
-								{...props}
-								friends={this.state.friends}
-								setFriendToBeEdited={this.setFriendToBeEdited}
-								deleteFriend={this.deleteFriend}
-							/>
-						)}
-					/>
-					<Route
-						exact
-						path="/friend-editor/:id"
-						render={props => (
-							<FriendEditor
-								{...props}
-								form={this.state.form}
-								inputChange={this.inputChange}
-								addFriend={this.addFriend}
-								updateFriend={this.updateFriend}
-								isEditing={!!this.state.currentFriendId}
-							/>
-						)}
+						path="/"
+						render={pr => {
+							if (localStorage.getItem('token')) {
+								return (
+									<div>
+										{friendsPage}
+										{friendsForm}
+									</div>
+								);
+							}
+							return <Redirect to="/login" component={Login} />;
+						}}
 					/>
 				</div>
 			</Router>

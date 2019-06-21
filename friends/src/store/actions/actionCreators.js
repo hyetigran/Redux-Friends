@@ -34,3 +34,16 @@ export const fetchFriends = () => {
 			});
 	};
 };
+
+export const login = (username, password) => dispatch => {
+	const credentials = { username, password };
+
+	axios
+		.post('http://localhost:5000/api/login', credentials)
+		.then(res => {
+			localStorage.setItem('token', res.data.token);
+		})
+		.catch(res => {
+			console.log('AUTH FAILED');
+		});
+};
